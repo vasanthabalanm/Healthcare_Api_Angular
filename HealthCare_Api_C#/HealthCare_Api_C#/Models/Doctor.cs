@@ -19,7 +19,6 @@ namespace HealthCare_Api_C_.Models
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
 
-        //navigation
-        public ICollection<Appointment> appointments { get; set; }
+
     }
 }
