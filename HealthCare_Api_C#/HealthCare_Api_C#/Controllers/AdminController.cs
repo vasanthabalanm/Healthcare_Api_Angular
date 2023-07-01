@@ -11,6 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace HealthCare_Api_C_.Controllers
 {
@@ -131,6 +132,25 @@ namespace HealthCare_Api_C_.Controllers
 
             return admin;
         }*/
+        
+        /*[HttpPost("register")]
+        public async Task<IActionResult> AddUser([FromBody] Admin userObj)
+        {
+            if (userObj == null)
+                return BadRequest();
+
+            userObj.Password = PasswordHash.HashPassword(userObj.Password);
+            userObj.Role = "Admin";
+            userObj.Token = "";
+            await _authContext.AddAsync(userObj);
+            await _authContext.SaveChangesAsync();
+            return Ok(new
+            {
+                Status = 200,
+                Message = "Doctor has been approved"
+            });
+        }*/
+        
 
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenApiDto tokenApiDto)

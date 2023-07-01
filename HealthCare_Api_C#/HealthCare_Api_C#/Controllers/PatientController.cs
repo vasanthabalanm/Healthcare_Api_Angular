@@ -160,12 +160,55 @@ namespace HealthCare_Api_C_.Controllers
 
         }
 
-        [Authorize]
+        
         [HttpGet("Approved")]
-        public async Task<ActionResult<Admin>> GetAllDoctors()
+        public async Task<ActionResult<Doctor>> GetAllDoctors()
         {
-            return Ok(await _authContext.Admins.ToListAsync());
+            return Ok(await _authContext.Doctors.ToListAsync());
         }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Patient>>> GetAllUsers()
+        {
+            return Ok(await _authContext.Patients.ToListAsync());
+        }
+
+        [HttpGet("{email}")]
+        public async Task<IActionResult> GetUserByEmail(string email)
+        {
+            var user = await _authContext.Patients.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+                return NotFound(new { Message = "User not found!" });
+
+            return Ok(user);
+        }
+
+
+        [HttpPut("{email}")]
+        public async Task<IActionResult> UpdateUser(string email, [FromBody] Patient userObj)
+        {
+            if (userObj == null || email != userObj.Email)
+                return BadRequest();
+
+            var existingUser = await _authContext.Patients.FirstOrDefaultAsync(u => u.Email == email);
+            if (existingUser == null)
+                return NotFound(new { Message = "User not found!" });
+
+            // Update the properties
+            existingUser.Gender = userObj.Gender;
+            // Add other properties that you want to update here.
+
+            await _authContext.SaveChangesAsync();
+
+            return Ok(new
+            {
+                Status = 200,
+                Message = "User updated successfully"
+            });
+        }
+
+
+
 
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenApiDto tokenApiDto)
