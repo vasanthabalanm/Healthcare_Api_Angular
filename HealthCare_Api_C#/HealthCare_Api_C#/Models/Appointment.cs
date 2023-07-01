@@ -8,8 +8,8 @@ namespace HealthCare_Api_C_.Models
         [Key]
         public int? AppointmentId { get; set; }
 
-        [ForeignKey("Admin")]
-        public int? Id { get; set; }
+        [ForeignKey("Id")]
+        public Admin? DoctorId { get; set; }
 
         [ForeignKey("Admin")]
         public string? Specialization { get; set; }

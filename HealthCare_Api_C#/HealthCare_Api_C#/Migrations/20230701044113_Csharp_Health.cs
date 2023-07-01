@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HealthCare_Api_C_.Migrations
 {
     /// <inheritdoc />
-    public partial class Health_APi : Migration
+    public partial class Csharp_Health : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -91,23 +91,22 @@ namespace HealthCare_Api_C_.Migrations
                     Specialization = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Phone = table.Column<long>(type: "bigint", nullable: true),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AdminId = table.Column<int>(type: "int", nullable: true)
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Appointments", x => x.AppointmentId);
                     table.ForeignKey(
-                        name: "FK_Appointments_Admins_AdminId",
-                        column: x => x.AdminId,
+                        name: "FK_Appointments_Admins_Id",
+                        column: x => x.Id,
                         principalTable: "Admins",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointments_AdminId",
+                name: "IX_Appointments_Id",
                 table: "Appointments",
-                column: "AdminId");
+                column: "Id");
         }
 
         /// <inheritdoc />

@@ -124,23 +124,20 @@ namespace HealthCare_Api_C_.Controllers
             return Ok(await _authContext.Admins.ToListAsync());
         }
 
-        /*[HttpPost]
-        public async Task<ActionResult<Admin>> InsertDoctor(Admin admin)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Patient>>> GetallPatient()
         {
-            _authContext.Admins.Add(admin);
-            await _authContext.SaveChangesAsync();
+            return Ok(await _authContext.Patients.ToListAsync());
+        }
 
-            return admin;
-        }*/
-        
-        /*[HttpPost("register")]
+        [HttpPost("register_Approved")]
         public async Task<IActionResult> AddUser([FromBody] Admin userObj)
         {
             if (userObj == null)
                 return BadRequest();
 
             userObj.Password = PasswordHash.HashPassword(userObj.Password);
-            userObj.Role = "Admin";
+            userObj.Role = "Doctor";
             userObj.Token = "";
             await _authContext.AddAsync(userObj);
             await _authContext.SaveChangesAsync();
@@ -149,7 +146,7 @@ namespace HealthCare_Api_C_.Controllers
                 Status = 200,
                 Message = "Doctor has been approved"
             });
-        }*/
+        }
         
 
         [HttpPost("refresh")]

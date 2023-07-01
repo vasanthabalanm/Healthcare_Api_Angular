@@ -15,9 +15,9 @@ namespace HealthCare_Api_C_.Repository.AppointmentsDetails
         }
 
         //to view doctors list
-        public async Task<ActionResult<IEnumerable<Doctor>>> GetDoctorDetails()
+        public async Task<ActionResult<IEnumerable<Admin>>> GetDoctorDetails()
         {
-            var getdt = await _dbcontext.Doctors.ToListAsync();
+            var getdt = await _dbcontext.Admins.ToListAsync();
             return getdt;
         }
 
@@ -29,9 +29,9 @@ namespace HealthCare_Api_C_.Repository.AppointmentsDetails
         }
 
         //to fillter by doctorSpecialization
-        public async Task<List<Appointment>> FilterDoctor(string Specialization)
+        public async Task<List<Admin>> FilterDoctor(string Specialization)
         {
-            var query = _dbcontext.Appointments.AsQueryable();
+            var query = _dbcontext.Admins.AsQueryable();
 
             // Apply filters based on criteria
             if (!string.IsNullOrEmpty(Specialization))
@@ -48,6 +48,24 @@ namespace HealthCare_Api_C_.Repository.AppointmentsDetails
             await _dbcontext.SaveChangesAsync();
             return appointment;
 
+        }
+
+        //to update appointment
+        public async Task<Appointment> UpdateAppointment(int id, Appointment appointment)
+        {
+            var getdt = await _dbcontext.Appointments.FindAsync(id);
+            if (getdt == null)
+            {
+                throw new ArithmeticException("The given HotelId is Not available! Try again");
+            }
+            getdt.DoctorId = appointment.DoctorId;
+            getdt.Specialization = appointment.Specialization;
+            getdt.Phone = appointment.Phone;
+            getdt.Location = appointment.Location;
+            getdt.Gender = appointment.Gender;
+
+            await _dbcontext.SaveChangesAsync();
+            return getdt;
         }
 
         //to delete 

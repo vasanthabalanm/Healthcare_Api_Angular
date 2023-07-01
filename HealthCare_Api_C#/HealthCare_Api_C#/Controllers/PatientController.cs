@@ -162,9 +162,9 @@ namespace HealthCare_Api_C_.Controllers
 
         
         [HttpGet("Approved")]
-        public async Task<ActionResult<Doctor>> GetAllDoctors()
+        public async Task<ActionResult<Admin>> GetAllDoctors()
         {
-            return Ok(await _authContext.Doctors.ToListAsync());
+            return Ok(await _authContext.Admins.ToListAsync());
         }
 
         [HttpGet]
@@ -184,7 +184,8 @@ namespace HealthCare_Api_C_.Controllers
         }
 
 
-        [HttpPut("{email}")]
+
+        /*[HttpPut("{email}")]
         public async Task<IActionResult> UpdateUser(string email, [FromBody] Patient userObj)
         {
             if (userObj == null || email != userObj.Email)
@@ -205,7 +206,32 @@ namespace HealthCare_Api_C_.Controllers
                 Status = 200,
                 Message = "User updated successfully"
             });
+        }*/
+
+        [HttpPut("{email}")]
+        public async Task<IActionResult> updateemail(string email, Patient patient)
+        {
+            try
+            {
+                var getdt = await _authContext.Patients.FirstOrDefaultAsync(h => h.Email == email);
+                if (getdt == null)
+                {
+                    throw new ArithmeticException("The given email is not available! Try again");
+                }
+
+                getdt.FirstName=patient.FirstName; 
+                getdt.LastName=patient.LastName;
+                getdt.Gender = patient.Gender;
+
+                await _authContext.SaveChangesAsync();
+                return Ok(getdt);
+            }
+            catch (ArithmeticException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
+
 
 
 

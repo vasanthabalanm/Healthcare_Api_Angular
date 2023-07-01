@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthCare_Api_C_.Migrations
 {
     [DbContext(typeof(JwtauthDbcontext))]
-    [Migration("20230630174258_Health_APi")]
-    partial class Health_APi
+    [Migration("20230701044113_Csharp_Health")]
+    partial class Csharp_Health
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -82,9 +82,6 @@ namespace HealthCare_Api_C_.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("AppointmentId"));
 
-                    b.Property<int?>("AdminId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
 
@@ -102,7 +99,7 @@ namespace HealthCare_Api_C_.Migrations
 
                     b.HasKey("AppointmentId");
 
-                    b.HasIndex("AdminId");
+                    b.HasIndex("Id");
 
                     b.ToTable("Appointments");
                 });
@@ -201,14 +198,11 @@ namespace HealthCare_Api_C_.Migrations
 
             modelBuilder.Entity("HealthCare_Api_C_.Models.Appointment", b =>
                 {
-                    b.HasOne("HealthCare_Api_C_.Models.Admin", null)
-                        .WithMany("appointments")
-                        .HasForeignKey("AdminId");
-                });
+                    b.HasOne("HealthCare_Api_C_.Models.Admin", "DoctorId")
+                        .WithMany()
+                        .HasForeignKey("Id");
 
-            modelBuilder.Entity("HealthCare_Api_C_.Models.Admin", b =>
-                {
-                    b.Navigation("appointments");
+                    b.Navigation("DoctorId");
                 });
 #pragma warning restore 612, 618
         }

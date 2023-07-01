@@ -79,9 +79,6 @@ namespace HealthCare_Api_C_.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("AppointmentId"));
 
-                    b.Property<int?>("AdminId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
 
@@ -99,7 +96,7 @@ namespace HealthCare_Api_C_.Migrations
 
                     b.HasKey("AppointmentId");
 
-                    b.HasIndex("AdminId");
+                    b.HasIndex("Id");
 
                     b.ToTable("Appointments");
                 });
@@ -198,14 +195,11 @@ namespace HealthCare_Api_C_.Migrations
 
             modelBuilder.Entity("HealthCare_Api_C_.Models.Appointment", b =>
                 {
-                    b.HasOne("HealthCare_Api_C_.Models.Admin", null)
-                        .WithMany("appointments")
-                        .HasForeignKey("AdminId");
-                });
+                    b.HasOne("HealthCare_Api_C_.Models.Admin", "DoctorId")
+                        .WithMany()
+                        .HasForeignKey("Id");
 
-            modelBuilder.Entity("HealthCare_Api_C_.Models.Admin", b =>
-                {
-                    b.Navigation("appointments");
+                    b.Navigation("DoctorId");
                 });
 #pragma warning restore 612, 618
         }

@@ -17,7 +17,7 @@ namespace HealthCare_Api_C_.Controllers
         }
 
         [HttpGet("Approved")]
-        public async Task<ActionResult<IEnumerable<Doctor>>> GetDoctorDetails()
+        public async Task<ActionResult<IEnumerable<Admin>>> GetDoctorDetails()
         {
             return await _appointment.GetDoctorDetails();
         }
@@ -58,6 +58,21 @@ namespace HealthCare_Api_C_.Controllers
             try
             {
                 var getdt = await _appointment.PostAppointment(appointment);
+                return Ok(getdt);
+            }
+            catch (ArithmeticException ex)
+            {
+                return NotFound(ex.Message);
+
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAppointment(int id, Appointment appointment)
+        {
+            try
+            {
+                var getdt = await _appointment.UpdateAppointment(id, appointment);
                 return Ok(getdt);
             }
             catch (ArithmeticException ex)

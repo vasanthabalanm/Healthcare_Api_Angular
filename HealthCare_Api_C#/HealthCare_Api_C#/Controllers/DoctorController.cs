@@ -26,36 +26,7 @@ namespace HealthCare_Api_C_.Controllers
             _authContext = authContext;
         }
 
-        [HttpPost("authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody] Doctor userObj)
-        {
-            if (userObj == null)
-                return BadRequest();
-
-            var user = await _authContext.Doctors
-                .FirstOrDefaultAsync(x => x.Username == userObj.Username);
-
-            if (user == null)
-                return NotFound(new { Message = "User not found!" });
-
-            if (!PasswordHash.VerifyPassword(userObj.Password, user.Password))
-            {
-                return BadRequest(new { Message = "Password is Incorrect" });
-            }
-
-            user.Token = CreateJwt(user);
-            var newAccessToken = user.Token;
-            var newRefreshToken = CreateRefreshToken();
-            user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
-            await _authContext.SaveChangesAsync();
-
-            return Ok(new TokenApiDto()
-            {
-                AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken
-            });
-        }
+        
 
         [HttpPost("register")]
         public async Task<IActionResult> AddUser([FromBody] Doctor userObj)
@@ -75,7 +46,6 @@ namespace HealthCare_Api_C_.Controllers
             if (!string.IsNullOrEmpty(passMessage))
                 return BadRequest(new { Message = passMessage.ToString() });
 
-            userObj.Password = PasswordHash.HashPassword(userObj.Password);
             userObj.Role = "Doctor";
             userObj.Token = "";
             await _authContext.AddAsync(userObj);
@@ -104,62 +74,7 @@ namespace HealthCare_Api_C_.Controllers
             return sb.ToString();
         }
 
-        private string CreateJwt(Doctor user)
-        {
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("veryverysceret.....");
-            var identity = new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.Role, user.Role),
-                new Claim(ClaimTypes.Name,$"{user.Username}")
-            });
-
-            var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = identity,
-                Expires = DateTime.Now.AddDays(1),
-                SigningCredentials = credentials
-            };
-            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-            return jwtTokenHandler.WriteToken(token);
-        }
-
-        private string CreateRefreshToken()
-        {
-            var tokenBytes = RandomNumberGenerator.GetBytes(64);
-            var refreshToken = Convert.ToBase64String(tokenBytes);
-
-            var tokenInUser = _authContext.Doctors
-                .Any(a => a.RefreshToken == refreshToken);
-            if (tokenInUser)
-            {
-                return CreateRefreshToken();
-            }
-            return refreshToken;
-        }
-
-        private ClaimsPrincipal GetPrincipleFromExpiredToken(string token)
-        {
-            var key = Encoding.ASCII.GetBytes("veryverysceret.....");
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateLifetime = false
-            };
-            var tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken securityToken;
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
-            var jwtSecurityToken = securityToken as JwtSecurityToken;
-            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("This is Invalid Token");
-            return principal;
-
-        }
+        
 
         [Authorize]
         [HttpGet]
@@ -168,27 +83,6 @@ namespace HealthCare_Api_C_.Controllers
             return Ok(await _authContext.Doctors.ToListAsync());
         }
 
-        [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] TokenApiDto tokenApiDto)
-        {
-            if (tokenApiDto is null)
-                return BadRequest("Invalid Client Request");
-            string accessToken = tokenApiDto.AccessToken;
-            string refreshToken = tokenApiDto.RefreshToken;
-            var principal = GetPrincipleFromExpiredToken(accessToken);
-            var username = principal.Identity.Name;
-            var user = await _authContext.Doctors.FirstOrDefaultAsync(u => u.Username == username);
-            if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
-                return BadRequest("Invalid Request");
-            var newAccessToken = CreateJwt(user);
-            var newRefreshToken = CreateRefreshToken();
-            user.RefreshToken = newRefreshToken;
-            await _authContext.SaveChangesAsync();
-            return Ok(new TokenApiDto()
-            {
-                AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken,
-            });
-        }
+        
     }
 }
