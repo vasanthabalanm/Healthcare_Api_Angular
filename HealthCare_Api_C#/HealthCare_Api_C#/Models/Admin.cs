@@ -5,7 +5,7 @@ namespace HealthCare_Api_C_.Models
     public class Admin
     {
         [Key]
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Username { get; set; }
@@ -18,6 +18,8 @@ namespace HealthCare_Api_C_.Models
         public int? Experience { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
+
+        public ICollection<Appointment>? Appointments { get; set; }  = new List<Appointment>();
 
 
     }

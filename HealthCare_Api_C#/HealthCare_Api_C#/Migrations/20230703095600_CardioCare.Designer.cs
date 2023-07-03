@@ -4,6 +4,7 @@ using HealthCare_Api_C_.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthCare_Api_C_.Migrations
 {
     [DbContext(typeof(JwtauthDbcontext))]
-    partial class JwtauthDbcontextModelSnapshot : ModelSnapshot
+    [Migration("20230703095600_CardioCare")]
+    partial class CardioCare
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,11 +27,11 @@ namespace HealthCare_Api_C_.Migrations
 
             modelBuilder.Entity("HealthCare_Api_C_.Models.Admin", b =>
                 {
-                    b.Property<int?>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -79,9 +82,6 @@ namespace HealthCare_Api_C_.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("AppointmentId"));
 
-                    b.Property<int?>("AdminId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("Date")
                         .HasColumnType("date");
 
@@ -104,8 +104,6 @@ namespace HealthCare_Api_C_.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AppointmentId");
-
-                    b.HasIndex("AdminId");
 
                     b.ToTable("Appointments");
                 });
@@ -200,18 +198,6 @@ namespace HealthCare_Api_C_.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Patients");
-                });
-
-            modelBuilder.Entity("HealthCare_Api_C_.Models.Appointment", b =>
-                {
-                    b.HasOne("HealthCare_Api_C_.Models.Admin", null)
-                        .WithMany("Appointments")
-                        .HasForeignKey("AdminId");
-                });
-
-            modelBuilder.Entity("HealthCare_Api_C_.Models.Admin", b =>
-                {
-                    b.Navigation("Appointments");
                 });
 #pragma warning restore 612, 618
         }

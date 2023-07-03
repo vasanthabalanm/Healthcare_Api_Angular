@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthCare_Api_C_.Migrations
 {
     [DbContext(typeof(JwtauthDbcontext))]
-    [Migration("20230701044113_Csharp_Health")]
-    partial class Csharp_Health
+    [Migration("20230703100356_CardioCares")]
+    partial class CardioCares
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -82,6 +82,12 @@ namespace HealthCare_Api_C_.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("AppointmentId"));
 
+                    b.Property<int?>("AdminId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("date");
+
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
 
@@ -94,12 +100,15 @@ namespace HealthCare_Api_C_.Migrations
                     b.Property<long?>("Phone")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Problem")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Specialization")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AppointmentId");
 
-                    b.HasIndex("Id");
+                    b.HasIndex("AdminId");
 
                     b.ToTable("Appointments");
                 });
@@ -198,11 +207,14 @@ namespace HealthCare_Api_C_.Migrations
 
             modelBuilder.Entity("HealthCare_Api_C_.Models.Appointment", b =>
                 {
-                    b.HasOne("HealthCare_Api_C_.Models.Admin", "DoctorId")
-                        .WithMany()
-                        .HasForeignKey("Id");
+                    b.HasOne("HealthCare_Api_C_.Models.Admin", null)
+                        .WithMany("Appointments")
+                        .HasForeignKey("AdminId");
+                });
 
-                    b.Navigation("DoctorId");
+            modelBuilder.Entity("HealthCare_Api_C_.Models.Admin", b =>
+                {
+                    b.Navigation("Appointments");
                 });
 #pragma warning restore 612, 618
         }

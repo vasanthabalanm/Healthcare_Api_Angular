@@ -46,7 +46,7 @@ namespace HealthCare_Api_C_.Controllers
             var newAccessToken = user.Token;
             var newRefreshToken = CreateRefreshToken();
             user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
+            user.RefreshTokenExpiryTime = DateTime.Now.AddSeconds(300);
             await _authContext.SaveChangesAsync();
 
             return Ok(new TokenApiDto()
@@ -164,49 +164,46 @@ namespace HealthCare_Api_C_.Controllers
         [HttpGet("Approved")]
         public async Task<ActionResult<Admin>> GetAllDoctors()
         {
-            return Ok(await _authContext.Admins.ToListAsync());
+            try
+            {
+                var roledoctor = await _authContext.Admins.Where(p => p.Role == "Doctors").ToListAsync();
+                return Ok(roledoctor);
+            }
+            catch
+            {
+                return NotFound("there is no Doctor in the hospital");
+            }
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Patient>>> GetAllUsers()
         {
-            return Ok(await _authContext.Patients.ToListAsync());
+            try
+            {
+                return Ok(await _authContext.Patients.ToListAsync());
+            }
+            catch
+            {
+                return NotFound("there is active patients! all are cured");
+            }
         }
 
         [HttpGet("{email}")]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
-            var user = await _authContext.Patients.FirstOrDefaultAsync(u => u.Email == email);
-            if (user == null)
-                return NotFound(new { Message = "User not found!" });
-
-            return Ok(user);
-        }
-
-
-
-        /*[HttpPut("{email}")]
-        public async Task<IActionResult> UpdateUser(string email, [FromBody] Patient userObj)
-        {
-            if (userObj == null || email != userObj.Email)
-                return BadRequest();
-
-            var existingUser = await _authContext.Patients.FirstOrDefaultAsync(u => u.Email == email);
-            if (existingUser == null)
-                return NotFound(new { Message = "User not found!" });
-
-            // Update the properties
-            existingUser.Gender = userObj.Gender;
-            // Add other properties that you want to update here.
-
-            await _authContext.SaveChangesAsync();
-
-            return Ok(new
+            try
             {
-                Status = 200,
-                Message = "User updated successfully"
-            });
-        }*/
+                var user = await _authContext.Patients.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
+                    return NotFound(new { Message = "User not found!" });
+
+                return Ok(user);
+            }
+            catch
+            {
+                return NotFound("please check your email");
+            }
+        }
 
         [HttpPut("{email}")]
         public async Task<IActionResult> updateemail(string email, Patient patient)
@@ -226,15 +223,11 @@ namespace HealthCare_Api_C_.Controllers
                 await _authContext.SaveChangesAsync();
                 return Ok(getdt);
             }
-            catch (ArithmeticException ex)
+            catch 
             {
-                return NotFound(ex.Message);
+                return NotFound("there is no email found db to update!");
             }
         }
-
-
-
-
 
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenApiDto tokenApiDto)

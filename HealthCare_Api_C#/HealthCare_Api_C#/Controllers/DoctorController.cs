@@ -46,14 +46,14 @@ namespace HealthCare_Api_C_.Controllers
             if (!string.IsNullOrEmpty(passMessage))
                 return BadRequest(new { Message = passMessage.ToString() });
 
-            userObj.Role = "Doctor";
+            userObj.Role = "Doctors";
             userObj.Token = "";
             await _authContext.AddAsync(userObj);
             await _authContext.SaveChangesAsync();
             return Ok(new
             {
                 Status = 200,
-                Message = "Doctor id has been submitted to the admin!Please login after sometime...."
+                Message = "Doctor id has been submitted to the admin! \n Please login after sometime...."
             });
         }
         private Task<bool> CheckEmailExistAsync(string? email)
@@ -74,14 +74,20 @@ namespace HealthCare_Api_C_.Controllers
             return sb.ToString();
         }
 
-        
-
-        [Authorize]
         [HttpGet]
         public async Task<ActionResult<Doctor>> GetAllUsers()
         {
-            return Ok(await _authContext.Doctors.ToListAsync());
+            try
+            {
+                return Ok(await _authContext.Doctors.ToListAsync());
+            }
+            catch
+            {
+                return NotFound("There is no registered in doctors");
+            }
         }
+
+
 
         
     }

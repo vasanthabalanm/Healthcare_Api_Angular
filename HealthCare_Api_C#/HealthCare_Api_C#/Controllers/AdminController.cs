@@ -47,7 +47,7 @@ namespace HealthCare_Api_C_.Controllers
             var newAccessToken = user.Token;
             var newRefreshToken = CreateRefreshToken();
             user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
+            user.RefreshTokenExpiryTime = DateTime.Now.AddSeconds(300);
             await _authContext.SaveChangesAsync();
 
             return Ok(new TokenApiDto()
@@ -71,7 +71,7 @@ namespace HealthCare_Api_C_.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = identity,
-                Expires = DateTime.Now.AddSeconds(10),
+                Expires = DateTime.Now.AddSeconds(300),
                 SigningCredentials = credentials
             };
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
@@ -112,32 +112,53 @@ namespace HealthCare_Api_C_.Controllers
 
         }
 
-        [HttpGet("pending")]
+        [HttpGet("pendingdoctors")]
         public async Task<ActionResult<Doctor>> GetAllUsers()
         {
-            return Ok(await _authContext.Doctors.ToListAsync());
+            try
+            {
+                return Ok(await _authContext.Doctors.ToListAsync());
+            }
+            catch
+            {
+                return NotFound("there is no pending Doctors");
+            }
         }
 
-        [HttpGet("Approved")]
-        public async Task<ActionResult<Admin>> GetAllDoctors()
+        [HttpGet("Approveddoctorsandadmin")]
+        public async Task<ActionResult<Admin>> GetAlladmin()
         {
-            return Ok(await _authContext.Admins.ToListAsync());
+            try
+            {
+                return Ok(await _authContext.Admins.ToListAsync());
+            }
+            catch
+            {
+                return NotFound("there is no pending Doctors");
+            }
         }
 
-        [HttpGet]
+        [HttpGet("allpatients")]
         public async Task<ActionResult<IEnumerable<Patient>>> GetallPatient()
         {
-            return Ok(await _authContext.Patients.ToListAsync());
+            try
+            {
+                return Ok(await _authContext.Patients.ToListAsync());
+            }
+            catch
+            {
+                return NotFound("There is no patient");
+            }
         }
 
-        [HttpPost("register_Approved")]
+        [HttpPost("doctor_Approved")]
         public async Task<IActionResult> AddUser([FromBody] Admin userObj)
         {
             if (userObj == null)
                 return BadRequest();
 
             userObj.Password = PasswordHash.HashPassword(userObj.Password);
-            userObj.Role = "Doctor";
+            userObj.Role = "Doctors";
             userObj.Token = "";
             await _authContext.AddAsync(userObj);
             await _authContext.SaveChangesAsync();
@@ -147,7 +168,97 @@ namespace HealthCare_Api_C_.Controllers
                 Message = "Doctor has been approved"
             });
         }
+
+        [HttpDelete("delete_approved_Doctor/{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            try
+            {
+                var user = await _authContext.FindAsync<Admin>(id);
+                if (user == null)
+                    return NotFound();
+
+                _authContext.Remove(user);
+                await _authContext.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    Status = 200,
+                    Message = "Doctor has been deleted"
+                });
+            }
+            catch
+            {
+                return NotFound("there is no doctor based on your Id");
+            }
         
+            
+        }
+
+        [HttpDelete("delete_Pending_doctor/{id}")]
+        public async Task<IActionResult> DeletependingUser(int id)
+        {
+            try
+            {
+                var user = await _authContext.FindAsync<Doctor>(id);
+                if (user == null)
+                    return NotFound();
+
+                _authContext.Remove(user);
+                await _authContext.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    Status = 200,
+                    Message = "Doctor has been deleted"
+                });
+            }
+            catch
+            {
+                return NotFound("there is no pending doctor based on your ID");
+            }
+           
+        }
+
+        //[Authorize (Roles ="Admin")]
+        [HttpGet ("GetRolesOfDoctors")]
+        public async Task<ActionResult<IEnumerable<Admin>>> GetRoleDoctor()
+        {
+            try
+            {
+                var roledoctor = await _authContext.Admins.Where(p => p.Role == "Doctors").ToListAsync();
+                return Ok(roledoctor);
+            }
+            catch
+            {
+                return NotFound("There is no roles in Doctors, \n please ask admin if any mistake");
+            }
+            
+        }
+
+        [HttpGet("appointments_Doctors")]
+        public async Task<IActionResult> GetDoctorAppointments(string doctorName, string doctorEmail)
+        {
+            try
+            {
+                // Find the admin (doctor) based on unique name and email
+                var doctor = await _authContext.Admins.FirstOrDefaultAsync(a => a.Username == doctorName && a.Email == doctorEmail);
+
+                if (doctor == null)
+                    return NotFound("Doctor not found.");
+
+                // Get appointments associated with the doctor
+                var appointments = await _authContext.Appointments.Where(a => a.Id == doctor.Id).ToListAsync();
+
+                return Ok(appointments);
+            }
+            catch
+            {
+                return NotFound("there is no Active patient based on your details");
+            }
+           
+        }
+
 
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenApiDto tokenApiDto)
@@ -171,8 +282,6 @@ namespace HealthCare_Api_C_.Controllers
                 RefreshToken = newRefreshToken,
             });
         }
-
-
 
     }
 }

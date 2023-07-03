@@ -4,6 +4,7 @@ using HealthCare_Api_C_.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthCare_Api_C_.Migrations
 {
     [DbContext(typeof(JwtauthDbcontext))]
-    partial class JwtauthDbcontextModelSnapshot : ModelSnapshot
+    [Migration("20230703100743_CardioCaress")]
+    partial class CardioCaress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

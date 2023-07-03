@@ -17,8 +17,8 @@ namespace HealthCare_Api_C_.Repository.AppointmentsDetails
         //to view doctors list
         public async Task<ActionResult<IEnumerable<Admin>>> GetDoctorDetails()
         {
-            var getdt = await _dbcontext.Admins.ToListAsync();
-            return getdt;
+            var approveddoctor = await _dbcontext.Admins.Where(p => p.Role == "Doctors").ToListAsync();
+            return approveddoctor;
         }
 
         //to view appointment details
@@ -35,7 +35,7 @@ namespace HealthCare_Api_C_.Repository.AppointmentsDetails
 
             // Apply filters based on criteria
             if (!string.IsNullOrEmpty(Specialization))
-                query = query.Where(h => h.Specialization == Specialization);
+                query = query.Where(h => h.Specialization == Specialization && h.Role == "Doctors");
 
             // Execute the query asynchronously and return the filtered hotels
             return await query.ToListAsync();
@@ -58,8 +58,10 @@ namespace HealthCare_Api_C_.Repository.AppointmentsDetails
             {
                 throw new ArithmeticException("The given HotelId is Not available! Try again");
             }
-            getdt.DoctorId = appointment.DoctorId;
+            getdt.Id = appointment.Id;
             getdt.Specialization = appointment.Specialization;
+            getdt.Date = appointment.Date;
+            getdt.Problem = appointment.Problem;
             getdt.Phone = appointment.Phone;
             getdt.Location = appointment.Location;
             getdt.Gender = appointment.Gender;

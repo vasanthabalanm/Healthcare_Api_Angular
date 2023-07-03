@@ -1,5 +1,6 @@
 ﻿using HealthCare_Api_C_.Models;
 using HealthCare_Api_C_.Repository.AppointmentsDetails;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,39 +17,64 @@ namespace HealthCare_Api_C_.Controllers
             _appointment = appointment;
         }
 
+        /*[Authorize (Roles ="Patient")]*/
         [HttpGet("Approved")]
         public async Task<ActionResult<IEnumerable<Admin>>> GetDoctorDetails()
         {
-            return await _appointment.GetDoctorDetails();
+            try
+            {
+
+                return await _appointment.GetDoctorDetails();
+            }
+            catch
+            {
+                return NotFound("there is no doctor details found");
+            }
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentDetails()
         {
+            try
+            {
+                var res = await _appointment.GetAppointmentDetails();
+                if (res != null)
+                {
+                    return Ok(res);
+                }
+                else
+                {
+                    return NotFound("there is no appointmnets");
+                }
+            }
+            catch
+            {
+                return NotFound("please make an appointment");
+            }
+
             
-            var res =  await _appointment.GetAppointmentDetails();
-            if (res != null)
-            {
-                return Ok(res);
-            }
-            else
-            {
-                return NotFound("there is no appointmnets");
-            }
         }
 
         [HttpGet("filter")]
         public async Task<IActionResult> FilterDoctor([FromQuery] string Specialization)
         {
-            var filterdoctor = await _appointment.FilterDoctor(Specialization);
-            if (filterdoctor != null)
+            try
             {
-                return Ok(filterdoctor);
+                var filterdoctor = await _appointment.FilterDoctor(Specialization);
+                if (filterdoctor != null )
+                {
+                    return Ok(filterdoctor);
+                }
+                else
+                {
+                    return NotFound("Doctor is not found based on your preference");
+                }
             }
-            else
+            catch
             {
-                return NotFound("Doctor is not found based on your preference");
+                return NotFound("Please check the Specialization ");
             }
+            
 
         }
 
@@ -60,9 +86,9 @@ namespace HealthCare_Api_C_.Controllers
                 var getdt = await _appointment.PostAppointment(appointment);
                 return Ok(getdt);
             }
-            catch (ArithmeticException ex)
+            catch
             {
-                return NotFound(ex.Message);
+                return NotFound("You could allow to post your apppointment,\n please again fill the form to make appointments");
 
             }
         }
@@ -75,9 +101,9 @@ namespace HealthCare_Api_C_.Controllers
                 var getdt = await _appointment.UpdateAppointment(id, appointment);
                 return Ok(getdt);
             }
-            catch (ArithmeticException ex)
+            catch
             {
-                return NotFound(ex.Message);
+                return NotFound("you could not update based on appointment Id");
 
             }
         }
@@ -88,13 +114,11 @@ namespace HealthCare_Api_C_.Controllers
             try
             {
                 var getdt = await _appointment.DeleteAppointment(appointment);
-
-
                 return Ok(getdt);
             }
-            catch (ArithmeticException ex)
+            catch
             {
-                return NotFound(ex.Message);
+                return NotFound("There is no appointment to delete by the given Id");
 
             }
         }
