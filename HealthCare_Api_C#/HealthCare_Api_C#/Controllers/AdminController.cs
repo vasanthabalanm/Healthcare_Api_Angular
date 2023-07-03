@@ -112,6 +112,7 @@ namespace HealthCare_Api_C_.Controllers
 
         }
 
+        [Authorize]
         [HttpGet("pendingdoctors")]
         public async Task<ActionResult<Doctor>> GetAllUsers()
         {
@@ -125,6 +126,7 @@ namespace HealthCare_Api_C_.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("Approveddoctorsandadmin")]
         public async Task<ActionResult<Admin>> GetAlladmin()
         {
@@ -138,6 +140,7 @@ namespace HealthCare_Api_C_.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("allpatients")]
         public async Task<ActionResult<IEnumerable<Patient>>> GetallPatient()
         {
@@ -151,6 +154,7 @@ namespace HealthCare_Api_C_.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("doctor_Approved")]
         public async Task<IActionResult> AddUser([FromBody] Admin userObj)
         {
@@ -169,6 +173,7 @@ namespace HealthCare_Api_C_.Controllers
             });
         }
 
+        [Authorize]
         [HttpDelete("delete_approved_Doctor/{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -195,6 +200,7 @@ namespace HealthCare_Api_C_.Controllers
             
         }
 
+        [Authorize]
         [HttpDelete("delete_Pending_doctor/{id}")]
         public async Task<IActionResult> DeletependingUser(int id)
         {
@@ -220,7 +226,7 @@ namespace HealthCare_Api_C_.Controllers
            
         }
 
-        //[Authorize (Roles ="Admin")]
+        [Authorize (Roles ="Admin")]
         [HttpGet ("GetRolesOfDoctors")]
         public async Task<ActionResult<IEnumerable<Admin>>> GetRoleDoctor()
         {
@@ -236,6 +242,7 @@ namespace HealthCare_Api_C_.Controllers
             
         }
 
+        [Authorize]
         [HttpGet("appointments_Doctors")]
         public async Task<IActionResult> GetDoctorAppointments(string doctorName, string doctorEmail)
         {

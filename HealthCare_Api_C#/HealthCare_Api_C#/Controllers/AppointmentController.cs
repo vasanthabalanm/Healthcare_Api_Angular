@@ -17,7 +17,7 @@ namespace HealthCare_Api_C_.Controllers
             _appointment = appointment;
         }
 
-        /*[Authorize (Roles ="Patient")]*/
+        [Authorize]
         [HttpGet("Approved")]
         public async Task<ActionResult<IEnumerable<Admin>>> GetDoctorDetails()
         {
@@ -32,6 +32,7 @@ namespace HealthCare_Api_C_.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentDetails()
         {
@@ -50,11 +51,10 @@ namespace HealthCare_Api_C_.Controllers
             catch
             {
                 return NotFound("please make an appointment");
-            }
-
-            
+            }   
         }
 
+        [Authorize]
         [HttpGet("filter")]
         public async Task<IActionResult> FilterDoctor([FromQuery] string Specialization)
         {
@@ -74,10 +74,9 @@ namespace HealthCare_Api_C_.Controllers
             {
                 return NotFound("Please check the Specialization ");
             }
-            
-
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Appointment>> PostAppointment(Appointment appointment)
         {
@@ -93,6 +92,7 @@ namespace HealthCare_Api_C_.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAppointment(int id, Appointment appointment)
         {
@@ -108,6 +108,7 @@ namespace HealthCare_Api_C_.Controllers
             }
         }
 
+        [Authorize]
         [HttpDelete("{appointment}")]
         public async Task<ActionResult<string>> DeleteAppointment(int appointment)
         {

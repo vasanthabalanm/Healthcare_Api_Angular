@@ -160,7 +160,7 @@ namespace HealthCare_Api_C_.Controllers
 
         }
 
-        
+        [Authorize]
         [HttpGet("Approved")]
         public async Task<ActionResult<Admin>> GetAllDoctors()
         {
@@ -175,6 +175,7 @@ namespace HealthCare_Api_C_.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Patient>>> GetAllUsers()
         {
@@ -188,6 +189,7 @@ namespace HealthCare_Api_C_.Controllers
             }
         }
 
+        [Authorize(Roles = "Patient")]
         [HttpGet("{email}")]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
@@ -205,6 +207,7 @@ namespace HealthCare_Api_C_.Controllers
             }
         }
 
+        [Authorize (Roles ="Patient")]
         [HttpPut("{email}")]
         public async Task<IActionResult> updateemail(string email, Patient patient)
         {
