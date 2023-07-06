@@ -71,7 +71,7 @@ namespace HealthCare_Api_C_.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = identity,
-                Expires = DateTime.Now.AddSeconds(300),
+                Expires = DateTime.Now.AddDays(1),
                 SigningCredentials = credentials
             };
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
@@ -161,6 +161,15 @@ namespace HealthCare_Api_C_.Controllers
             if (userObj == null)
                 return BadRequest();
 
+            // check email
+            if (await CheckEmailExistAsync(userObj.Email))
+                return BadRequest(new { Message = "Email Already Exist" });
+
+            //check username
+            if (await CheckUsernameExistAsync(userObj.Username))
+                return BadRequest(new { Message = "Username Already Exist" });
+
+
             userObj.Password = PasswordHash.HashPassword(userObj.Password);
             userObj.Role = "Doctors";
             userObj.Token = "";
@@ -172,6 +181,12 @@ namespace HealthCare_Api_C_.Controllers
                 Message = "Doctor has been approved"
             });
         }
+
+        private Task<bool> CheckEmailExistAsync(string? email)
+            => _authContext.Doctors.AnyAsync(x => x.Email == email);
+
+        private Task<bool> CheckUsernameExistAsync(string? username)
+            => _authContext.Doctors.AnyAsync(x => x.Username == username);
 
         [Authorize]
         [HttpDelete("delete_approved_Doctor/{id}")]
@@ -241,6 +256,25 @@ namespace HealthCare_Api_C_.Controllers
             }
             
         }
+
+        [Authorize]
+        [HttpPut("Doctorareupdate/{id}")]
+        public async Task<ActionResult<Admin>> updatedoctors(int id, Admin admin)
+        {
+            var roledoctor = await _authContext.Admins.FirstOrDefaultAsync(p => p.Id == id && p.Role == "Doctors");
+            if (roledoctor == null)
+            {
+                throw new ArgumentException("The given doctor ID is not available! Please try again.");
+            }
+
+            roledoctor.Experience = admin.Experience;
+            roledoctor.Phone = admin.Phone;
+
+            await _authContext.SaveChangesAsync();
+            return roledoctor;
+        }
+
+
 
         [Authorize]
         [HttpGet("appointments_Doctors")]

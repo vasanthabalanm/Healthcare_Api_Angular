@@ -46,7 +46,7 @@ namespace HealthCare_Api_C_.Controllers
             var newAccessToken = user.Token;
             var newRefreshToken = CreateRefreshToken();
             user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddSeconds(300);
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
             await _authContext.SaveChangesAsync();
 
             return Ok(new TokenApiDto()

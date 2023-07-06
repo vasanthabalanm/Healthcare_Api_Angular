@@ -56,10 +56,9 @@ namespace HealthCare_Api_C_.Repository.AppointmentsDetails
             var getdt = await _dbcontext.Appointments.FindAsync(id);
             if (getdt == null)
             {
-                throw new ArithmeticException("The given HotelId is Not available! Try again");
+                throw new ArithmeticException("The given appooitmentId is Not available! Try again");
             }
             getdt.Id = appointment.Id;
-            getdt.Specialization = appointment.Specialization;
             getdt.Date = appointment.Date;
             getdt.Problem = appointment.Problem;
             getdt.Phone = appointment.Phone;

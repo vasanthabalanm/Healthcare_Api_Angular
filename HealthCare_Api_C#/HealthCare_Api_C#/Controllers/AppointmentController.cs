@@ -36,9 +36,7 @@ namespace HealthCare_Api_C_.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentDetails()
         {
-            try
-            {
-                var res = await _appointment.GetAppointmentDetails();
+              var res = await _appointment.GetAppointmentDetails();
                 if (res != null)
                 {
                     return Ok(res);
@@ -47,20 +45,14 @@ namespace HealthCare_Api_C_.Controllers
                 {
                     return NotFound("there is no appointmnets");
                 }
-            }
-            catch
-            {
-                return NotFound("please make an appointment");
-            }   
+               
         }
 
         [Authorize]
         [HttpGet("filter")]
         public async Task<IActionResult> FilterDoctor([FromQuery] string Specialization)
         {
-            try
-            {
-                var filterdoctor = await _appointment.FilterDoctor(Specialization);
+              var filterdoctor = await _appointment.FilterDoctor(Specialization);
                 if (filterdoctor != null )
                 {
                     return Ok(filterdoctor);
@@ -69,11 +61,7 @@ namespace HealthCare_Api_C_.Controllers
                 {
                     return NotFound("Doctor is not found based on your preference");
                 }
-            }
-            catch
-            {
-                return NotFound("Please check the Specialization ");
-            }
+            
         }
 
         [Authorize]
